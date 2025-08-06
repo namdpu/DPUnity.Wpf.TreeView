@@ -1,0 +1,93 @@
+name: Publish NuGet Package to GitHub Packages
+
+on:
+  push:
+    branches:
+      - nuget
+
+env:
+  DISCORD_WEBHOOK: https://discordapp.com/api/webhooks/1402490419530432665/hFcn7hExzZ20MgLpbmGjdF4cwu3YpB5z4k5G01484Jouwl9GNWMxcJi-pYJZjexLFMch
+
+jobs:
+  build-and-publish:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Authenticate to GitHub Packages
+      shell: pwsh
+      run: |
+        dotnet nuget remove source github || echo "No existing 'github' source found."
+        dotnet nuget add source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" `
+          --name github `
+          --username "${{ github.actor }}" `
+          --password "${{ secrets.GIT_TOKEN }}" `
+          --store-password-in-clear-text
+
+    - name: Restore dependencies
+      run: dotnet restore ./src/DPUnity.Wpf.DpTreeView/DPUnity.Wpf.DpTreeView.csproj
+
+    - name: Build
+      run: dotnet build ./src/DPUnity.Wpf.DpTreeView/DPUnity.Wpf.DpTreeView.csproj --configuration Release
+
+    - name: Pack NuGet package
+      run: dotnet pack ./src/DPUnity.Wpf.DpTreeView/DPUnity.Wpf.DpTreeView.csproj --configuration Release --output ./nupkg
+
+    - name: Find .nupkg file
+      id: find_nupkg
+      shell: pwsh
+      run: |
+        $file = Get-ChildItem -Path ./nupkg -Filter *.nupkg | Select-Object -ExpandProperty FullName
+        echo "NUPKG_PATH=$file" >> $env:GITHUB_ENV
+
+    - name: Push to GitHub Packages
+      shell: pwsh
+      run: |
+        echo "Using package: $env:NUPKG_PATH"
+        dotnet nuget push "$env:NUPKG_PATH" `
+          --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" `
+          --api-key "${{ secrets.GIT_TOKEN }}" `
+          --skip-duplicate
+
+    - name: Get package info
+      id: package_info
+      shell: pwsh
+      run: |
+        $nupkgFile = Get-ChildItem -Path ./nupkg -Filter *.nupkg | Select-Object -First 1
+        $packageName = $nupkgFile.Name -replace '\.nupkg$', ''
+        echo "PACKAGE_NAME=$packageName" >> $env:GITHUB_ENV
+        echo "Package: $packageName"
+        
+        # Extract version from package name (assuming format: PackageName.Version.nupkg)
+        if ($packageName -match '\.(\d+\.\d+\.\d+(?:\.\d+)?)$') {
+          $version = $matches[1]
+          echo "PACKAGE_VERSION=$version" >> $env:GITHUB_ENV
+          echo "Version: $version"
+        }
+
+    - name: Notify Discord - Success
+      if: success()
+      shell: pwsh
+      run: |
+        $payload = @{
+          content = ":white_check_mark: **Build & Publish Success** - DPU Wpf DpTreeView`n:package: NuGet Package built and published successfully`n:clipboard: Package: $env:PACKAGE_NAME`n:link: Version: $env:PACKAGE_VERSION`n:link: Repository: ${{ github.repository }}`n:bust_in_silhouette: Author: ${{ github.actor }}"
+        } | ConvertTo-Json
+        
+        Invoke-RestMethod -Uri "${{ env.DISCORD_WEBHOOK }}" -Method Post -Body $payload -ContentType "application/json"
+
+    - name: Notify Discord - Failed
+      if: failure()
+      shell: pwsh
+      run: |
+        $payload = @{
+          content = ":x: **Build & Publish Failed** - DPU Wpf DpTreeView`n:boom: NuGet package build and publish failed`n:link: Repository: ${{ github.repository }}`n:bust_in_silhouette: Author: ${{ github.actor }}`n:pencil: Commit: ``${{ github.sha }}```n:mag: Check logs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        } | ConvertTo-Json
+        
+        Invoke-RestMethod -Uri "${{ env.DISCORD_WEBHOOK }}" -Method Post -Body $payload -ContentType "application/json"
