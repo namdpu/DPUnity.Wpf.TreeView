@@ -205,8 +205,8 @@
                                            Margin="5 0" />
                                 <ComboBox x:Name="ExpandLevelComboBox"
                                           Height="25"
-                                          ItemsSource="{Binding (ftv:TreeViewBehavior.ExpandLevels), RelativeSource={RelativeSource AncestorType=TreeView}}"
-                                          SelectedItem="{Binding (ftv:TreeViewBehavior.SelectedExpandLevel), RelativeSource={RelativeSource AncestorType=TreeView}, Mode=TwoWay}" />
+                                          ItemsSource="{Binding (ftv:TreeViewBehavior.ExpandLevels), RelativeSource={RelativeSource TemplatedParent}}"
+                                          SelectedItem="{Binding (ftv:TreeViewBehavior.SelectedExpandLevel), RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" />
                                 <hc:Divider Orientation="Vertical" />
                             </hc:SimpleStackPanel>
                         </Border>
