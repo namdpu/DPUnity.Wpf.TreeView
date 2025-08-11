@@ -71,6 +71,67 @@ namespace DPUnity.Wpf.DpTreeView
                     ScheduleUpdate(item, isChecked, getter, setter);
                 }
             };
+            // Track dynamic children changes to keep check-state propagation consistent when items are added/removed at runtime
+            node.Children.CollectionChanged += (s, e) =>
+            {
+                // Handle added children: hook behavior and align parent/ancestors state
+                if (e.NewItems != null)
+                {
+                    foreach (var obj in e.NewItems)
+                    {
+                        if (obj is T child)
+                        {
+                            // Ensure the new child has behavior wired up
+                            SetupCheckBoxBehavior(child);
+
+                            // If parent has a definite state, optionally propagate it to the new subtree
+                            var parentState = getter(node);
+                            if (parentState.HasValue)
+                            {
+                                // Avoid re-entrancy while bulk-updating new subtree
+                                LockUI();
+                                try
+                                {
+                                    UpdateChildCheckStatesBatch(child, parentState.Value, setter);
+                                }
+                                finally
+                                {
+                                    UnlockUI();
+                                }
+                            }
+
+                            // Recalculate tri-state for the parent and its ancestors now that a child exists/changed
+                            LockUI();
+                            try
+                            {
+                                UpdateNodeStateFromChildren(node, getter, setter);
+                                // Propagate upwards starting from this parent
+                                UpdateParentCheckStateOptimized(node, getter, setter);
+                            }
+                            finally
+                            {
+                                UnlockUI();
+                            }
+                        }
+                    }
+                }
+
+                // Handle removed children: recompute parent's tri-state and bubble up
+                if (e.OldItems != null)
+                {
+                    // After removal, child.Parent may be nulled already; we know 'node' is the parent
+                    LockUI();
+                    try
+                    {
+                        UpdateNodeStateFromChildren(node, getter, setter);
+                        UpdateParentCheckStateOptimized(node, getter, setter);
+                    }
+                    finally
+                    {
+                        UnlockUI();
+                    }
+                }
+            };
             foreach (var child in node.Children)
             {
                 SetupCheckBoxBehavior(child);
@@ -234,6 +295,36 @@ namespace DPUnity.Wpf.DpTreeView
                 };
                 _updateTimers[item] = timer;
                 timer.Start();
+            }
+        }
+
+        // Helper: recompute a node's IsChecked from its children's states (all true => true, all false => false, mixed => null)
+        private static void UpdateNodeStateFromChildren<T>(T node, Func<object, bool?> getter, Action<object, bool?> setter) where T : HierarchicalItemBase<T>
+        {
+            if (node.Children == null || node.Children.Count == 0)
+            {
+                return;
+            }
+
+            bool allChecked = true;
+            bool allUnchecked = true;
+            var children = node.Children;
+            for (int i = 0; i < children.Count; i++)
+            {
+                bool? state = getter(children[i]);
+                if (state != true) allChecked = false;
+                if (state != false) allUnchecked = false;
+                if (!allChecked && !allUnchecked)
+                {
+                    break;
+                }
+            }
+
+            bool? newState = allChecked ? true : allUnchecked ? false : (bool?)null;
+            bool? currentState = getter(node);
+            if (newState != currentState)
+            {
+                setter(node, newState);
             }
         }
     }
