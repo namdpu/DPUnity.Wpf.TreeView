@@ -1,23 +1,32 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
-    <UseWPF>true</UseWPF>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Version>1.0.2</Version>
-    <PackageId>DPUnity.Wpf.DpTreeView</PackageId>
-    <Title>DPUnity WPF TreeView</Title>
-    <Description>Enhanced TreeView controls with filtering and hierarchical data support for WPF applications</Description>
-    <Authors>vanlk</Authors>
-    <Company>DPUnity</Company>
-    <RepositoryUrl>https://github.com/namdpu/DPUnity.Wpf.TreeView</RepositoryUrl>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<UseWPF>true</UseWPF>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Version>1.0.3</Version>
+		<PackageId>DPUnity.Wpf.DpTreeView</PackageId>
+		<Title>DPUnity WPF TreeView</Title>
+		<Description>Enhanced TreeView controls with filtering and hierarchical data support for WPF applications</Description>
+		<Authors>vanlk</Authors>
+		<Company>DPUnity</Company>
+		<RepositoryUrl>https://github.com/namdpu/DPUnity.Wpf.TreeView</RepositoryUrl>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-    <PackageReference Include="DPUnity.Windows" Version="1.1.8" />
-    <PackageReference Include="DPUnity.Wpf.UI" Version="1.0.8.2-preview-6" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+		<PackageReference Include="DPUnity.Windows" Version="1.1.8" />
+		<PackageReference Include="DPUnity.Wpf.UI" Version="1.0.8.4" />
+		<PackageReference Include="HandyControls" Version="3.6.0" />
+	</ItemGroup>
+
+
+	<!--<ItemGroup>
+		<Reference Include="DPUnity.Wpf.UI">
+			<HintPath>..\..\..\DPUnity.Wpf.UI\bin\Debug\net8.0-windows\DPUnity.Wpf.UI.dll</HintPath>
+		</Reference>
+	</ItemGroup>-->
+
 
 </Project>

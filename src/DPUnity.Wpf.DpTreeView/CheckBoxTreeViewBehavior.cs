@@ -278,9 +278,6 @@ namespace DPUnity.Wpf.DpTreeView
                             {
                                 UpdateParentCheckStateOptimized(item, getter, setter);
                             }
-                            // Optional: Force GC for testing memory release (comment out in production; .NET GC handles it automatically)
-                            // GC.Collect();
-                            // GC.WaitForPendingFinalizers();
                         }
                         finally
                         {
