@@ -87,7 +87,7 @@ jobs:
         status: success
         title: "DPUnity Wpf TreeView - Build & Publish Success"
         description: |
-          **Package:** ${{ env.PACKAGE_NAME }}:${{ steps.package_info.outputs.PACKAGE_VERSION }}
+          **Package:** ${{ env.PACKAGE_NAME }}
         color: 0x00ff00
 
     - name: Notify Discord - Failed
@@ -97,5 +97,5 @@ jobs:
         status: failure
         title: "DPUnity Wpf TreeView - Build & Publish Failed"
         description: |
-          **Package:** ${{ env.PACKAGE_NAME }}:${{ steps.package_info.outputs.PACKAGE_VERSION }}
+          **Package:** ${{ env.PACKAGE_NAME }}
         color: 0xff0000
