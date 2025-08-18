@@ -189,12 +189,12 @@
                             <hc:SimpleStackPanel Height="35"
                                                  Margin="5"
                                                  Orientation="Horizontal">
-                                <Button Style="{DynamicResource DP_IconButton}"
+                                <Button Style="{DynamicResource DP_IconButtonWithoutBorder}"
                                         Content="ExpandAll"
                                         ToolTip="Expand All"
                                         Command="{Binding (ftv:TreeViewBehavior.ExpandAllCommand), RelativeSource={RelativeSource AncestorType=TreeView}}"
                                         CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=TreeView}}" />
-                                <Button Style="{DynamicResource DP_IconButton}"
+                                <Button Style="{DynamicResource DP_IconButtonWithoutBorder}"
                                         Content="CollapseAll"
                                         ToolTip="Collapse All"
                                         Command="{Binding (ftv:TreeViewBehavior.CollapseAllCommand), RelativeSource={RelativeSource AncestorType=TreeView}}"
