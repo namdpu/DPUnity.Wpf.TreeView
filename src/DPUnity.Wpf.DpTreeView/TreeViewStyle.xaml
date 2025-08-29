@@ -5,6 +5,7 @@
                     xmlns:ftv="clr-namespace:DPUnity.Wpf.DpTreeView">
     <ResourceDictionary.MergedDictionaries>
         <hc:IntellisenseResources Source="/HandyControl;Component/DesignTime/DesignTimeResources.xaml" />
+        <hc:Theme />
     </ResourceDictionary.MergedDictionaries>
 
 

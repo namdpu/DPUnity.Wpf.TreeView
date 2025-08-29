@@ -18,12 +18,13 @@
               ftv:TreeViewBehavior.IsBehaviorEnabled="True"
               ftv:TreeViewBehavior.ItemsSourceWatcher="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=UserControl}}"
               ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=UserControl}}" />
-        <hc:TextBox hc:InfoElement.Placeholder="Search"
+        <hc:TextBox hc:InfoElement.Placeholder="Tìm kiếm"
                     Margin="5 9 10 0"
                     Grid.Column="1"
                     Height="30"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Top"
+                    Style="{DynamicResource TextBoxExtend}"
                     Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" />
     </Grid>
 </UserControl>

@@ -18,9 +18,10 @@
                   Grid.ColumnSpan="2"
                   ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=UserControl}}"
                   Margin=" 0 0 0 20" />
-        <hc:TextBox hc:InfoElement.Placeholder="Search"
+        <hc:TextBox hc:InfoElement.Placeholder="Tìm kiếm"
                     Margin="5 9 10 0"
                     Grid.Column="1"
+                    Style="{DynamicResource TextBoxExtend}"
                     Height="30"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Top"
