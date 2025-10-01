@@ -2,10 +2,11 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:hc="https://handyorg.github.io/handycontrol"
                     xmlns:icons="https://dpunity.com/dev/wpf/ui/controls/packicon"
-                    xmlns:ftv="clr-namespace:DPUnity.Wpf.DpTreeView">
+                    xmlns:ftv="clr-namespace:DPUnity.Wpf.DpTreeView"
+                    xmlns:rs="clr-namespace:DPUnity.Wpf.UI.Styles;assembly=DPUnity.Wpf.UI">
     <ResourceDictionary.MergedDictionaries>
         <hc:IntellisenseResources Source="/HandyControl;Component/DesignTime/DesignTimeResources.xaml" />
-        <hc:Theme />
+        <rs:DpuResources />
     </ResourceDictionary.MergedDictionaries>
 
 
@@ -200,6 +201,7 @@
                                         CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=TreeView}}" />
                                 <hc:Divider Orientation="Vertical" />
                                 <TextBlock Text="Expand level: "
+                                           Foreground="{DynamicResource PrimaryTextBrush}"
                                            VerticalAlignment="Center"
                                            Margin="5 0" />
                                 <ComboBox x:Name="ExpandLevelComboBox"
