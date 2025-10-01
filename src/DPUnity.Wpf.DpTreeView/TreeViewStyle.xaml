@@ -2,9 +2,11 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:hc="https://handyorg.github.io/handycontrol"
                     xmlns:icons="https://dpunity.com/dev/wpf/ui/controls/packicon"
-                    xmlns:ftv="clr-namespace:DPUnity.Wpf.DpTreeView">
+                    xmlns:ftv="clr-namespace:DPUnity.Wpf.DpTreeView"
+                    xmlns:rs="clr-namespace:DPUnity.Wpf.UI.Styles;assembly=DPUnity.Wpf.UI">
     <ResourceDictionary.MergedDictionaries>
         <hc:IntellisenseResources Source="/HandyControl;Component/DesignTime/DesignTimeResources.xaml" />
+        <rs:DpuResources />
     </ResourceDictionary.MergedDictionaries>
 
 
@@ -116,8 +118,6 @@
         </Setter>
     </Style>
 
-
-
     <Style x:Key="DP_HighlightTextBlockStyle"
            TargetType="hc:HighlightTextBlock">
         <Setter Property="Foreground"
@@ -186,7 +186,7 @@
                         <Border Grid.Row="0"
                                 BorderBrush="{DynamicResource BorderBrush}"
                                 BorderThickness="1">
-                            <hc:SimpleStackPanel Height="35"
+                            <hc:SimpleStackPanel 
                                                  Margin="5"
                                                  Orientation="Horizontal">
                                 <Button Style="{DynamicResource DP_IconButtonWithoutBorder}"
@@ -201,10 +201,11 @@
                                         CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=TreeView}}" />
                                 <hc:Divider Orientation="Vertical" />
                                 <TextBlock Text="Expand level: "
+                                           Foreground="{DynamicResource PrimaryTextBrush}"
                                            VerticalAlignment="Center"
                                            Margin="5 0" />
                                 <ComboBox x:Name="ExpandLevelComboBox"
-                                          Height="25"
+                                          Style="{DynamicResource ComboBox.Small}"
                                           ItemsSource="{Binding (ftv:TreeViewBehavior.ExpandLevels), RelativeSource={RelativeSource TemplatedParent}}"
                                           SelectedItem="{Binding (ftv:TreeViewBehavior.SelectedExpandLevel), RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" />
                                 <hc:Divider Orientation="Vertical" />
@@ -234,7 +235,7 @@
         <Setter Property="ItemTemplate">
             <Setter.Value>
                 <HierarchicalDataTemplate ItemsSource="{Binding Children}">
-                    <StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Horizontal" >
                         <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}"
                                   VerticalAlignment="Center"
                                   HorizontalAlignment="Left">
@@ -249,7 +250,7 @@
                                         <icons:PackIcon x:Name="icon"
                                                         Width="16"
                                                         Height="16"
-                                                        Margin="-3 0 0 0">
+                                                        Margin="-4 0 0 0">
                                         </icons:PackIcon>
                                     </Border>
                                     <ControlTemplate.Triggers>
