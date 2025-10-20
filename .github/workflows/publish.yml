@@ -7,6 +7,10 @@ on:
 
 env:
   DISCORD_WEBHOOK: https://discordapp.com/api/webhooks/1402490419530432665/hFcn7hExzZ20MgLpbmGjdF4cwu3YpB5z4k5G01484Jouwl9GNWMxcJi-pYJZjexLFMch
+  DOTNET_VERSION: '8.0.x'
+  PROJECT_FILE: 'DPUnity.Wpf.DpTreeView'
+  PROJECT_PATH: './src/DPUnity.Wpf.DpTreeView/DPUnity.Wpf.DpTreeView.csproj'
+  PACKAGE_NAME: 'DPUnity.Wpf.DpTreeView'
 
 jobs:
   build-and-publish:
@@ -19,7 +23,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '8.0.x'
+        dotnet-version: ${{ env.DOTNET_VERSION }}
 
     - name: Authenticate to GitHub Packages
       shell: pwsh
@@ -32,13 +36,13 @@ jobs:
           --store-password-in-clear-text
 
     - name: Restore dependencies
-      run: dotnet restore ./src/DPUnity.Wpf.DpTreeView/DPUnity.Wpf.DpTreeView.csproj
+      run: dotnet restore ${{ env.PROJECT_PATH }}
 
     - name: Build
-      run: dotnet build ./src/DPUnity.Wpf.DpTreeView/DPUnity.Wpf.DpTreeView.csproj --configuration Release
+      run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release
 
     - name: Pack NuGet package
-      run: dotnet pack ./src/DPUnity.Wpf.DpTreeView/DPUnity.Wpf.DpTreeView.csproj --configuration Release --output ./nupkg
+      run: dotnet pack ${{ env.PROJECT_PATH }} --configuration Release --output ./nupkg
 
     - name: Find .nupkg file
       id: find_nupkg
@@ -70,24 +74,28 @@ jobs:
           $version = $matches[1]
           echo "PACKAGE_VERSION=$version" >> $env:GITHUB_ENV
           echo "Version: $version"
+          echo "::set-output name=PACKAGE_VERSION::$version"
+        } else {
+          echo "::set-output name=PACKAGE_VERSION::"
         }
+        echo "::set-output name=PACKAGE_NAME::$packageName"
 
     - name: Notify Discord - Success
       if: success()
-      shell: pwsh
-      run: |
-        $payload = @{
-          content = ":white_check_mark: **Build & Publish Success** - DPU Wpf DpTreeView`n:package: NuGet Package built and published successfully`n:clipboard: Package: $env:PACKAGE_NAME`n:link: Version: $env:PACKAGE_VERSION`n:link: Repository: ${{ github.repository }}`n:bust_in_silhouette: Author: ${{ github.actor }}"
-        } | ConvertTo-Json
-        
-        Invoke-RestMethod -Uri "${{ env.DISCORD_WEBHOOK }}" -Method Post -Body $payload -ContentType "application/json"
+      uses: sarisia/actions-status-discord@v1
+      with:
+        status: success
+        title: "DPUnity Wpf TreeView - Build & Publish Success"
+        description: |
+          **Package:** ${{ env.PACKAGE_NAME }}
+        color: 0x00ff00
 
     - name: Notify Discord - Failed
       if: failure()
-      shell: pwsh
-      run: |
-        $payload = @{
-          content = ":x: **Build & Publish Failed** - DPU Wpf DpTreeView`n:boom: NuGet package build and publish failed`n:link: Repository: ${{ github.repository }}`n:bust_in_silhouette: Author: ${{ github.actor }}`n:pencil: Commit: ``${{ github.sha }}```n:mag: Check logs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-        } | ConvertTo-Json
-        
-        Invoke-RestMethod -Uri "${{ env.DISCORD_WEBHOOK }}" -Method Post -Body $payload -ContentType "application/json"
+      uses: sarisia/actions-status-discord@v1
+      with:
+        status: failure
+        title: "DPUnity Wpf TreeView - Build & Publish Failed"
+        description: |
+          **Package:** ${{ env.PACKAGE_NAME }}
+        color: 0xff0000
